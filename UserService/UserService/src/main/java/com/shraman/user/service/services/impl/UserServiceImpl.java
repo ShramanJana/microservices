@@ -13,10 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -62,14 +60,15 @@ public class UserServiceImpl implements UserService {
     private void populateRatingsDataToUserObject(User userObject) {
 //        Rating[] ratingsArray = restTemplate.getForObject("http://RATING-SERVICE/api/v1/ratings/user/" + userObject.getUserId(), Rating[].class);
 //        if(ratingsArray!=null && ratingsArray.length !=0) {
+
         ResponseEntity<List<Rating>> ratingsResponse = ratingServiceCaller.fetchRatingsByUserId(userObject.getUserId());
         if(ratingsResponse.getStatusCode().is2xxSuccessful()) {
             List<Rating> ratings = ratingsResponse.getBody();
             if (ratings != null) {
                 ratings.forEach(rating -> {
-//                    Hotel hotelObject = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotel/" + rating.getHotelId(), Hotel.class);
+                    Hotel hotelObject = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotel/" + rating.getHotelId(), Hotel.class);
 
-                    Hotel hotelObject = hotelServiceCaller.getHotel(rating.getHotelId());
+//                    Hotel hotelObject = hotelServiceCaller.getHotel(rating.getHotelId());
                     rating.setHotel(hotelObject);
                 });
             }
